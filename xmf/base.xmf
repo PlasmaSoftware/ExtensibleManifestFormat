@@ -1,0 +1,22 @@
+# Pieces of metadata
+DEFINE AUTHOR plasma.xmf.verbs.AuthorVerb
+DEFINE DESCRIPTION plasma.xmf.verbs.DescriptionVerb
+DEFINE VERSION plasma.xmf.verbs.VersionVerb
+DEFINE NAME plasma.xmf.verbs.NameVerb
+
+# Filling out our own metadata
+AUTHOR Austin
+DESCRIPTION The parent of all .xmf files
+NAME base
+$XMF_VERSION<-1.0
+VERSION $XMF_VERSION
+
+# Utilities
+DEFINE ALIAS plasma.xmf.verbs.AliasVerb # This allows for verbs to have multiple potential synonyms: Clause is in the form "ORIGINAL ALIAS"
+DEFINE PRINT plasma.xmf.verbs.PrintVerb # This simply prints the given clauses to standard out
+DEFINE RUN plasma.xmf.verbs.RunVerb # Runs the given clause in the shell
+DEFINE ENV plasma.xmf.verbs.EnvVerb # Sets an environment variable: Clause is in the form "VARIABLE_NAME VALUE"
+
+# Using our own utilities
+ALIAS DESCRIPTION DESC
+ALIAS PRINT ECHO
