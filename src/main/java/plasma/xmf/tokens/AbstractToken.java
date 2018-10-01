@@ -11,4 +11,9 @@ public abstract class AbstractToken {
     public String getRawContent() {
         return rawContent;
     }
+
+    @Override
+    public String toString() {
+        return getRawContent();
+    }
 }

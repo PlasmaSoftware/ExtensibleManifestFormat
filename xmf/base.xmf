@@ -16,6 +16,7 @@ DEFINE ALIAS plasma.xmf.verbs.AliasVerb # This allows for verbs to have multiple
 DEFINE PRINT plasma.xmf.verbs.PrintVerb # This simply prints the given clauses to standard out
 DEFINE RUN plasma.xmf.verbs.RunVerb # Runs the given clause in the shell
 DEFINE ENV plasma.xmf.verbs.EnvVerb # Sets an environment variable: Clause is in the form "VARIABLE_NAME VALUE"
+DEFINE GET plasma.xmf.verbs.GetVerb # Gets an environment variable and saves it as a macro: Clause is in the form "VARIABLE_NAME [Optional:MACRO_NAME]"
 
 # Using our own utilities
 ALIAS DESCRIPTION DESC
