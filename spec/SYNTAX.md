@@ -23,6 +23,7 @@ This format does not support arbitrary escaping of characters. Instead it is lim
 special cases. Currently these are:
 * `\n`: Translated to a newline character.
 * `\#`: Translated to a `#` character. This is useful for escaping comments.
+* `\$`: Translated to a `$` character. This is useful for escaping macros.
 
 ### Comments
 Comments are prefixed by the `#` character. Any remaining portion of the line will be totally
@@ -45,7 +46,8 @@ is done with the form `$NAME` where `NAME` is a string with no spaces. Assignmen
 macros are done in the form of `$NAME<-BLOCK` where `NAME` is a string with no spaces and 
 `BLOCK` is a valid block as defined above. Note that whitespace is NOT allowed between the 
 `$NAME`, `<-` and `BLOCK` portions as the parser will begin reading the block directly after
-the `-` character.
+the `-` character. **Warning!** Macros can easily break manifests, it is very difficult to cover all
+cases so macros are only guaranteed to work if they are not effecting block structure.
 
 ### Verbs and Clauses
 Actions are performed by listing a variety of verbs and clauses. These are in the form

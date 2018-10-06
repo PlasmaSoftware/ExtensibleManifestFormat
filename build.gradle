@@ -9,10 +9,12 @@ sourceCompatibility = 1.8
 
 repositories {
     jcenter()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
 //    compile 'com.google.code.findbugs:jsr305:3.0.2'
+    compile "com.github.austinv11:Servicer:master-SNAPSHOT"
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

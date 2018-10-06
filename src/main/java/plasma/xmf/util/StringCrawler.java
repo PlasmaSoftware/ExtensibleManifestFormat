@@ -87,12 +87,12 @@ public class StringCrawler {
         return sb.toString();
     }
 
-    public String nextRegex(String regex) {
-        if (!hasRemaining())
-            return null;
-
-        Pattern pattern = Pattern.compile("^" + regex)
-        Matcher m = pattern.matcher(getRemaining());
-        if (!)
-    }
+//    public String nextRegex(String regex) {
+//        if (!hasRemaining())
+//            return null;
+//
+//        Pattern pattern = Pattern.compile("^" + regex)
+//        Matcher m = pattern.matcher(getRemaining());
+//        if (!)
+//    }
 }
