@@ -10,10 +10,20 @@ public final class ManifestContext {
     private final Map<String, String> verbs = new HashMap<>();
 
     public ManifestContext() {
-        fillSpecialMacros();
+        fillSpecialMacros(System.getProperty("user.dir"));
+        fillInBuiltins();
     }
 
-    private void fillSpecialMacros() {
+    public ManifestContext(String cwd) {
+        fillSpecialMacros(cwd);
+        fillInBuiltins();
+    }
+
+    private void fillSpecialMacros(String cwd) {
+        macros.put("CWD", cwd);
+    }
+
+    private void fillInBuiltins() {
 
     }
 

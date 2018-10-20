@@ -1,19 +1,28 @@
 package plasma.xmf;
 
 import plasma.xmf.exceptions.InvalidBlockStartException;
+import plasma.xmf.exceptions.InvalidMacroDeclarationException;
+import plasma.xmf.exceptions.InvalidVerbException;
 import plasma.xmf.exceptions.MalformedBlockException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 
 public final class XMFParser {
 
-    private static final Pattern MACRO_DECLARATION = Pattern.compile("(\\$[a-zA-Z0-9]+<-(?=.))");
-    private static final Pattern MACRO = Pattern.compile("(\\$[a-zA-Z0-9]+)");
     private static final String WHITESPACE = " \t\n\r\f";
     private static final String BLOCK_START = "'\"";
+
+    private static final Map<String, String> CHARACTER_ESCAPES = new HashMap<>();
+
+    static {
+        CHARACTER_ESCAPES.put("\\n", "\n");
+        CHARACTER_ESCAPES.put("\\#", "#");
+        CHARACTER_ESCAPES.put("\\$", "$");
+    }
 
     private static String stripComments(String s) {
         String[] lines = s.split("\n+");
@@ -119,11 +128,60 @@ public final class XMFParser {
         return chunks;
     }
 
+    private static String handleBlock(ManifestContext context, String block) {
+        int blockType = block.startsWith("'") ? 1 : (block.startsWith("\"") ? 2 : 0);
+        if (blockType == 0) { //Implicit block
+            for (String macro : context.getAvailableMacros()) {
+                block = block.replaceAll(String.format("(?i:\\$%s)", macro), context.getMacro(macro));
+            }
+            for (String toReplace : CHARACTER_ESCAPES.keySet()) {
+                block = block.replaceAll(toReplace, CHARACTER_ESCAPES.get(toReplace));
+            }
+            StringBuilder newBlock = new StringBuilder();
+            for (String line : block.split("\n")) {
+                newBlock.append(line).append("\n");
+            }
+            block = newBlock.toString();
+            return block.substring(0, block.length()-1);
+        } else { //Explicit literal block, so we don't need to do pre processing
+            if ((blockType == 1 && !block.endsWith("'")) || (blockType == 2 && !block.endsWith("\""))) {
+                throw new MalformedBlockException("Block not quoted properly!");
+            }
+            return block.substring(1, block.length()-1);
+        }
+    }
+
     public static void handleXmf(String xmfString) {
         List<String> chunks = chunkString(xmfString);
         ManifestContext context = new ManifestContext();
+        List<ExecutionPair> verbs = new ArrayList<>();
         for (String chunk : chunks) {
+            if (chunk.startsWith("$")) {
+                if (!chunk.contains("<-")) {
+                    throw new MalformedBlockException("Blocks cannot start with a macro unless its a declaration!");
+                }
+                String macroName = chunk.split("<-")[0].substring(1);
+                if (macroName.isEmpty() || macroName.contains(" ")) {
+                    throw new InvalidMacroDeclarationException("Macro name is invalid!");
+                }
+                String block = handleBlock(context, chunk.substring(1 + macroName.length() + 2));
+                context.setMacro(macroName.toLowerCase(), block);
+            } else {
+                String verb = chunk.split(" ")[0].toLowerCase();
+                if (verb.isEmpty() || verb.contains("$")) {
+                    throw new InvalidVerbException("Verb name is invalid!");
+                }
 
+                String block = chunk.contains(" ") ? handleBlock(context, chunk.substring(verb.length() + 1)) : "";
+
+                if (verb.equals("import")) {  //Special case handling
+
+                } else if (verb.equals("define")) {  //More special case handling
+
+                } else {
+                    verbs.add(new ExecutionPair(verb, block));
+                }
+            }
         }
     }
 }

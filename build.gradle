@@ -1,5 +1,7 @@
 plugins {
     id 'java'
+    id "net.ltgt.apt" version "0.19"
+    id 'idea'
 }
 
 group 'plasma.xmf'
@@ -14,7 +16,7 @@ repositories {
 
 dependencies {
 //    compile 'com.google.code.findbugs:jsr305:3.0.2'
-    compile "com.github.austinv11:Servicer:master-SNAPSHOT"
+    annotationProcessor "com.github.austinv11:Servicer:master-SNAPSHOT"
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

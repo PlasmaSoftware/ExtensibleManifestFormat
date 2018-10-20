@@ -18,6 +18,10 @@ format of a list of verbs which are each followed by a clause.
 ## Syntax Rules
 The syntax rules are very simple. 
 
+### Casing
+Macros and Verbs are case INSENSITIVE! However, by convention, you should use these features in
+UPPERCASE exclusively to more easily differentiate them in your source.
+
 ### Escaped Characters
 This format does not support arbitrary escaping of characters. Instead it is limited to a few 
 special cases. Currently these are:
@@ -47,7 +51,7 @@ macros are done in the form of `$NAME<-BLOCK` where `NAME` is a string with no s
 `BLOCK` is a valid block as defined above. Note that whitespace is NOT allowed between the 
 `$NAME`, `<-` and `BLOCK` portions as the parser will begin reading the block directly after
 the `-` character. **Warning!** Macros can easily break manifests, it is very difficult to cover all
-cases so macros are only guaranteed to work if they are not effecting block structure.
+cases so macros are only guaranteed to work if they are not affecting block structure.
 
 ### Verbs and Clauses
 Actions are performed by listing a variety of verbs and clauses. These are in the form
