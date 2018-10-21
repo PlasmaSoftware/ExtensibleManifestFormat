@@ -19,12 +19,17 @@ public final class ManifestContext {
         fillInBuiltins();
     }
 
+    public ManifestContext(ManifestContext base) {
+        this.macros.putAll(base.macros);
+        this.verbs.putAll(base.verbs);
+    }
+
     private void fillSpecialMacros(String cwd) {
         macros.put("CWD", cwd);
     }
 
     private void fillInBuiltins() {
-
+        verbs.put("define", "plasma.xmf.verbs.DefineVerb");
     }
 
     public String getMacro(String key) {

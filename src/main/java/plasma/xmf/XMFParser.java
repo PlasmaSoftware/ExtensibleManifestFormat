@@ -1,14 +1,9 @@
 package plasma.xmf;
 
-import plasma.xmf.exceptions.InvalidBlockStartException;
-import plasma.xmf.exceptions.InvalidMacroDeclarationException;
-import plasma.xmf.exceptions.InvalidVerbException;
-import plasma.xmf.exceptions.MalformedBlockException;
+import plasma.xmf.exceptions.*;
+import plasma.xmf.ExecutionStep.Block;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 public final class XMFParser {
@@ -128,12 +123,9 @@ public final class XMFParser {
         return chunks;
     }
 
-    private static String handleBlock(ManifestContext context, String block) {
+    private static Block handleBlock(String block) {
         int blockType = block.startsWith("'") ? 1 : (block.startsWith("\"") ? 2 : 0);
         if (blockType == 0) { //Implicit block
-            for (String macro : context.getAvailableMacros()) {
-                block = block.replaceAll(String.format("(?i:\\$%s)", macro), context.getMacro(macro));
-            }
             for (String toReplace : CHARACTER_ESCAPES.keySet()) {
                 block = block.replaceAll(toReplace, CHARACTER_ESCAPES.get(toReplace));
             }
@@ -142,19 +134,18 @@ public final class XMFParser {
                 newBlock.append(line).append("\n");
             }
             block = newBlock.toString();
-            return block.substring(0, block.length()-1);
+            return new Block(true, block.substring(0, block.length()-1));
         } else { //Explicit literal block, so we don't need to do pre processing
             if ((blockType == 1 && !block.endsWith("'")) || (blockType == 2 && !block.endsWith("\""))) {
                 throw new MalformedBlockException("Block not quoted properly!");
             }
-            return block.substring(1, block.length()-1);
+            return new Block(false, block.substring(1, block.length()-1));
         }
     }
 
-    public static void handleXmf(String xmfString) {
+    protected static List<ExecutionStep> handleXmf(String xmfString) {
         List<String> chunks = chunkString(xmfString);
-        ManifestContext context = new ManifestContext();
-        List<ExecutionPair> verbs = new ArrayList<>();
+        List<ExecutionStep> verbs = new ArrayList<>();
         for (String chunk : chunks) {
             if (chunk.startsWith("$")) {
                 if (!chunk.contains("<-")) {
@@ -164,24 +155,29 @@ public final class XMFParser {
                 if (macroName.isEmpty() || macroName.contains(" ")) {
                     throw new InvalidMacroDeclarationException("Macro name is invalid!");
                 }
-                String block = handleBlock(context, chunk.substring(1 + macroName.length() + 2));
-                context.setMacro(macroName.toLowerCase(), block);
+                Block block = handleBlock(chunk.substring(1 + macroName.length() + 2));
+                verbs.add(new ExecutionStep(macroName.toLowerCase(), block, false));
             } else {
                 String verb = chunk.split(" ")[0].toLowerCase();
                 if (verb.isEmpty() || verb.contains("$")) {
                     throw new InvalidVerbException("Verb name is invalid!");
                 }
 
-                String block = chunk.contains(" ") ? handleBlock(context, chunk.substring(verb.length() + 1)) : "";
+                Block block = chunk.contains(" ") ? handleBlock(chunk.substring(verb.length() + 1)) : Block.NULL_BLOCK;
 
                 if (verb.equals("import")) {  //Special case handling
-
-                } else if (verb.equals("define")) {  //More special case handling
-
+                    if (block == Block.NULL_BLOCK)
+                        throw new InvalidVerbArgumentsException("Cannot import from an empty source string!");
+                    Optional<String> imported = ImportResolver.findXMF(block.getRawContent());
+                    if (!imported.isPresent())
+                        throw new InvalidVerbArgumentsException("Unable to import from source: '" + block + "'!");
+                    List<ExecutionStep> importedXMF = handleXmf(imported.get());
+                    verbs.addAll(importedXMF);
                 } else {
-                    verbs.add(new ExecutionPair(verb, block));
+                    verbs.add(new ExecutionStep(verb, block, true));
                 }
             }
         }
+        return verbs;
     }
 }
