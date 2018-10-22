@@ -10,13 +10,5 @@ public interface Verb {
         return this.getClass().getCanonicalName();
     }
 
-    EvaluationStage stage();
-
-    default ManifestContext invoke(ManifestContext context, String clause) {
-        return context;
-    }
-
-    enum EvaluationStage {
-        EARLY, LATE
-    }
+    ManifestContext invoke(ManifestContext context, String clause);
 }

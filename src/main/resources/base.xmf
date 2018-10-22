@@ -4,10 +4,10 @@ DEFINE DESCRIPTION plasma.xmf.verbs.DescriptionVerb
 DEFINE VERSION plasma.xmf.verbs.VersionVerb
 DEFINE NAME plasma.xmf.verbs.NameVerb
 
-# Filling out our own metadata
-AUTHOR Austin
-DESCRIPTION The parent of all .xmf files
-NAME base
+# Filling out some default metadata
+AUTHOR Unknown Author
+DESCRIPTION N/A
+NAME Unknown Name
 $XMF_VERSION<-1.0
 VERSION $XMF_VERSION
 

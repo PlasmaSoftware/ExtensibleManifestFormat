@@ -8,6 +8,7 @@ public final class ManifestContext {
 
     private final Map<String, String> macros = new HashMap<>();
     private final Map<String, String> verbs = new HashMap<>();
+    private final Map<String, Object> data = new HashMap<>();
 
     public ManifestContext() {
         fillSpecialMacros(System.getProperty("user.dir"));
@@ -22,6 +23,7 @@ public final class ManifestContext {
     public ManifestContext(ManifestContext base) {
         this.macros.putAll(base.macros);
         this.verbs.putAll(base.verbs);
+        this.data.putAll(base.data);
     }
 
     private void fillSpecialMacros(String cwd) {
@@ -54,5 +56,18 @@ public final class ManifestContext {
 
     public void setVerb(String key, String value) {
         verbs.put(key, value);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T getData(String key, Class<T> type) {
+        return (T) data.getOrDefault(key, null);
+    }
+
+    public Set<String> getAvailableData() {
+        return data.keySet();
+    }
+
+    public void setData(String key, Object o) {
+        data.put(key, o);
     }
 }
