@@ -21,7 +21,7 @@ public final class ExecutionStep {
     }
 
     public boolean hasBlock() {
-        return this.block == Block.NULL_BLOCK;
+        return this.block != Block.NULL_BLOCK;
     }
 
     public boolean isVerbCall() {

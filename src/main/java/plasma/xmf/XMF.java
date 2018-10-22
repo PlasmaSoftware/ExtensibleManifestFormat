@@ -1,6 +1,7 @@
 package plasma.xmf;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -58,5 +59,35 @@ public final class XMF {
             builder.append(step.toString()).append("\n");
         }
         return builder.toString();
+    }
+
+    public static final class Builder {
+
+        private ManifestContext context = new ManifestContext();
+        private final List<ExecutionStep> executionSteps = new ArrayList<>();
+
+        public Builder setContext(ManifestContext context) {
+            this.context = context;
+            return this;
+        }
+
+        public Builder addStep(ExecutionStep step) {
+            this.executionSteps.add(step);
+            return this;
+        }
+
+        public Builder addSteps(Iterable<ExecutionStep> steps) {
+            steps.forEach(this.executionSteps::add);
+            return this;
+        }
+
+        public Builder setSteps(Iterable<ExecutionStep> steps) {
+            this.executionSteps.clear();
+            return addSteps(steps);
+        }
+
+        public XMF build() {
+            return new XMF(this.context, this.executionSteps);
+        }
     }
 }
