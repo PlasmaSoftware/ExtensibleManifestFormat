@@ -19,4 +19,11 @@ public abstract class PropertyVerb<T> implements Verb {
         context.setData(key(), convert(clause[0]));
         return context;
     }
+
+    public static <T> T getProperty(ManifestContext context, String prop, Class<T> type) {
+        if (!context.hasVerb(prop))
+            return null;
+
+        return context.getData(prop, type);
+    }
 }
