@@ -26,7 +26,7 @@ public final class ImportResolver {
             }
         } else if (address.startsWith("classpath:")) {
             try {
-                return Optional.of(readClasspath(address.substring(11)));
+                return Optional.of(readClasspath(address.substring(10)));
             } catch (IOException e) {
                 return Optional.empty();
             }
@@ -54,7 +54,7 @@ public final class ImportResolver {
         StringBuilder response = new StringBuilder();
 
         while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
+            response.append(inputLine + "\n");
         }
         in.close();
 

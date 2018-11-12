@@ -14,7 +14,7 @@ public final class XMF {
     static {
         List<ExecutionStep> tBASE;
         try {
-            tBASE = XMFParser.handleXmf(ImportResolver.findXMF("classpath:base.xmf").get());
+            tBASE = XMFParser.handleXmf(ImportResolver.findXMF("classpath:/xmf/base.xmf").get());
         } catch (Exception e) {
             tBASE = Collections.emptyList();
             System.err.println("[XMF Parser] WARNING: Cannot load base.xmf, this library will continue to function but bugs are likely to occur!");
@@ -48,6 +48,10 @@ public final class XMF {
 
     public static XMF fromString(String xmf) {
         return fromString(xmf, new ManifestContext());
+    }
+
+    public static XMF base() {
+        return new XMF(new ManifestContext(), BASE);
     }
 
     @Override

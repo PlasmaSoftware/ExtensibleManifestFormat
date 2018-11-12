@@ -15,14 +15,14 @@ public class ArgumentParser implements Iterable<String> {
         this.tokens = tokens;
     }
 
-    public static ArgumentParser parse(ExecutionStep.Block content) {
-        if (!content.isImplicit()) {
-            return new ArgumentParser(new String[]{content.getRawContent()});
+    public static ArgumentParser parse(String content, boolean isImplicit) {
+        if (!isImplicit) {
+            return new ArgumentParser(new String[]{content});
         } else {
-            String c = content.getRawContent();
+            String c = content;
             c = c.trim();
             int iStr = 0, iArr = 0;
-            String[] buf = new String[StringUtil.countChar(c, ' ')]; //Max amount of args are the # of words
+            String[] buf = new String[StringUtil.countChar(c, ' ')+1]; //Max amount of args are the # of words
             while (iStr < c.length()) {
                 String currSubstring = c.substring(iStr);
                 if (XMFParser.WHITESPACE.indexOf(currSubstring.charAt(0)) == 0) {
@@ -45,7 +45,7 @@ public class ArgumentParser implements Iterable<String> {
                 buf[iArr++] = tokenizer.nextToken();
                 iStr += buf[iArr-1].length();
             }
-            return new ArgumentParser(iArr == buf.length-1 ? buf : Arrays.copyOf(buf, iArr+1));
+            return new ArgumentParser(iArr == buf.length ? buf : Arrays.copyOf(buf, iArr+1));
         }
     }
 

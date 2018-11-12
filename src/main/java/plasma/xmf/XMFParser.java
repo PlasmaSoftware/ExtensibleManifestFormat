@@ -16,7 +16,7 @@ public final class XMFParser {
     static {
         CHARACTER_ESCAPES.put("\\n", "\n");
         CHARACTER_ESCAPES.put("\\#", "#");
-        CHARACTER_ESCAPES.put("\\$", "$");
+        CHARACTER_ESCAPES.put("\\$", "\\$");
     }
 
     private static String stripComments(String s) {
@@ -71,13 +71,16 @@ public final class XMFParser {
         s = stripComments(s);
         s = stripEmptyLines(s);
 
+        if (s.isEmpty())
+            return Collections.emptyList();
+
         // Need to do primitive block parsing
         List<String> chunks = new ArrayList<>();
         int chunkType = -1; //-1=none or whitespace delineated, 0=single quote, 1=double quote
         for (String line : s.split("\n")) {
             switch (chunkType) {
                 case -1:
-                    if (WHITESPACE.indexOf(line.charAt(0)) == -1 && BLOCK_START.indexOf(line.charAt(0)) == -1) {
+                    if (!line.isEmpty() && WHITESPACE.indexOf(line.charAt(0)) == -1 && BLOCK_START.indexOf(line.charAt(0)) == -1) {
                         chunks.add(line);
                         String clause = getClause(line);
                         if (clause != null) {

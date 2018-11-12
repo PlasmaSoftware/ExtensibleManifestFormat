@@ -13,15 +13,17 @@ public abstract class PropertyVerb<T> implements Verb {
 
     @Override
     public ManifestContext invoke(ManifestContext context, String[] clause) {
-        if (clause.length != 1)
-            throw new InvalidVerbArgumentsException("Property verbs require EXACTLY 1 argument");
+        if (clause.length < 1)
+            throw new InvalidVerbArgumentsException("Property verbs require an argument!");
 
-        context.setData(key(), convert(clause[0]));
+        String val = String.join(" ", clause);
+
+        context.setData(key(), convert(val));
         return context;
     }
 
     public static <T> T getProperty(ManifestContext context, String prop, Class<T> type) {
-        if (!context.hasVerb(prop))
+        if (!context.hasData(prop))
             return null;
 
         return context.getData(prop, type);

@@ -33,20 +33,22 @@ public class DefaultXMFHandler implements XMFHandler {
     }
 
     @Override
-    public void introduce(ManifestContext context) {
+    public ManifestContext introduce(ManifestContext context) {
         observers.forEach(o -> o.observePreExecution(context));
+        return context;
     }
 
     @Override
-    public void nextStep(ManifestContext context, ExecutionStep currStep) {
+    public ManifestContext nextStep(ManifestContext context, ExecutionStep currStep) {
         if (currStep.isVerbCall()) {
             String verb = currStep.getBinding();
 
             if (!context.hasVerb(verb))
                 throw new InvalidVerbException("Verb '" + verb + "' does not exist!");
 
-            String block = currStep.hasBlock() ? currStep.getBlock().getRawContent() : null;
-            String[] args = block == null ? new String[0] : ArgumentParser.parse(currStep.getBlock()).getTokens();
+            String block = injectMacros(context, currStep.hasBlock() ? currStep.getBlock().getRawContent() : null);
+
+            String[] args = block == null ? new String[0] : ArgumentParser.parse(block, currStep.getBlock().isImplicit()).getTokens();
 
             String normalizedVerb = context.getVerb(verb);
 
@@ -56,31 +58,37 @@ public class DefaultXMFHandler implements XMFHandler {
                 throw new InvalidVerbException("Verb '" + verb + "' is incorrectly mapped! (mapping=" + normalizedVerb + ")");
 
             if (!observers.stream().allMatch(o -> o.observePreVerb(context, normalizedVerb, args)))
-                return;
+                return context;
 
             ManifestContext nContext = v.invoke(context, args);
 
             observers.forEach(o -> o.observePostVerb(nContext, normalizedVerb, args));
+
+            return nContext;
         } else {
             String macro = currStep.getBinding();
 
             if (!currStep.hasBlock())
                 throw new InvalidMacroDeclarationException("Macros cannot have non-existent blocks!");
 
-            String block = currStep.getBlock().getRawContent();
+            String block = injectMacros(context, currStep.getBlock().getRawContent());
 
             if (!observers.stream().allMatch(o -> o.observePreMacro(context, macro, block)))
-                return;
+                return context;
 
-            context.setMacro(macro, block);
+            ManifestContext nContext = context.copy();
+            nContext.setMacro(macro, block);
 
-            observers.forEach(o -> o.observePostMacro(context, macro, block));
+            observers.forEach(o -> o.observePostMacro(nContext, macro, block));
+
+            return nContext;
         }
     }
 
     @Override
-    public void exit(ManifestContext context) {
+    public ManifestContext exit(ManifestContext context) {
         observers.forEach(o -> o.observePostExecution(context));
+        return context;
     }
 
     public interface XMFObserver {

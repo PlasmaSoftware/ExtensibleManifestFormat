@@ -24,10 +24,10 @@ public class XMFExecutionEnvironment {
     public ManifestContext execute(XMF xmf) throws XMFException {
         XMFHandler h = provider.provide();
         ManifestContext context = new ManifestContext(xmf.getContext());
-        h.introduce(context);
+        context = h.introduce(context);
         for (ExecutionStep step : xmf.getExecutionSteps())
-            h.nextStep(context, step);
-        h.exit(context);
+            context = h.nextStep(context, step);
+        context = h.exit(context);
         return context;
     }
 
