@@ -58,9 +58,9 @@ public class DefaultXMFHandler implements XMFHandler {
             if (!observers.stream().allMatch(o -> o.observePreVerb(context, normalizedVerb, args)))
                 return;
 
-            v.invoke(context, args);
+            ManifestContext nContext = v.invoke(context, args);
 
-            observers.forEach(o -> o.observePostVerb(context, normalizedVerb, args));
+            observers.forEach(o -> o.observePostVerb(nContext, normalizedVerb, args));
         } else {
             String macro = currStep.getBinding();
 

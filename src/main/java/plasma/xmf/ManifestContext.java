@@ -27,7 +27,7 @@ public final class ManifestContext {
     }
 
     private void fillSpecialMacros(String cwd) {
-        macros.put("CWD", cwd);
+        macros.put("cwd", cwd);
     }
 
     private void fillInBuiltins() {
@@ -81,5 +81,9 @@ public final class ManifestContext {
 
     public boolean hasData(String key) {
         return data.containsKey(key);
+    }
+
+    public ManifestContext copy() {
+        return new ManifestContext(this);
     }
 }
