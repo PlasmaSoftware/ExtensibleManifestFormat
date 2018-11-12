@@ -15,8 +15,14 @@ import java.util.Set;
 public class DefaultXMFHandler implements XMFHandler {
 
     public static XMFHandlerProvider buildDefaultProvider() {
+        return buildDefaultProvider(false);
+    }
+
+    public static XMFHandlerProvider buildDefaultProvider(boolean restrictDefinitions) {
         Provider p = new Provider();
         p.addObserver(new MagicMacroLock());
+        if (restrictDefinitions)
+            p.addObserver(new DefineLock());
         return p;
     }
 
@@ -42,18 +48,19 @@ public class DefaultXMFHandler implements XMFHandler {
             String block = currStep.hasBlock() ? currStep.getBlock().getRawContent() : null;
             String[] args = block == null ? new String[0] : ArgumentParser.parse(currStep.getBlock()).getTokens();
 
-            if (!observers.stream().allMatch(o -> o.observePreVerb(context, verb, args)))
-                return;
-
             String normalizedVerb = context.getVerb(verb);
+
             Verb v = Verbs.getVerb(normalizedVerb);
 
             if (v == null)
                 throw new InvalidVerbException("Verb '" + verb + "' is incorrectly mapped! (mapping=" + normalizedVerb + ")");
 
+            if (!observers.stream().allMatch(o -> o.observePreVerb(context, normalizedVerb, args)))
+                return;
+
             v.invoke(context, args);
 
-            observers.forEach(o -> o.observePostVerb(context, verb, args));
+            observers.forEach(o -> o.observePostVerb(context, normalizedVerb, args));
         } else {
             String macro = currStep.getBinding();
 
@@ -116,6 +123,14 @@ public class DefaultXMFHandler implements XMFHandler {
         @Override
         public boolean observePreMacro(ManifestContext context, String macro, String content) {
             return !MAGIC_MACROS.contains(macro.toLowerCase());
+        }
+    }
+
+    private static final class DefineLock implements XMFObserver {
+
+        @Override
+        public boolean observePreVerb(ManifestContext context, String verb, String[] args) {
+            return !verb.equalsIgnoreCase("plasma.xmf.verbs.DefineVerb");
         }
     }
 }
