@@ -10,5 +10,5 @@ public interface Verb {
         return this.getClass().getCanonicalName();
     }
 
-    ManifestContext invoke(ManifestContext context, String clause);
+    ManifestContext invoke(ManifestContext context, String[] args);
 }

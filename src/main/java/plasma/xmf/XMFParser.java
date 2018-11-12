@@ -8,8 +8,8 @@ import java.util.function.Function;
 
 public final class XMFParser {
 
-    private static final String WHITESPACE = " \t\n\r\f";
-    private static final String BLOCK_START = "'\"";
+    public static final String WHITESPACE = " \t\n\r\f";
+    public static final String BLOCK_START = "'\"";
 
     private static final Map<String, String> CHARACTER_ESCAPES = new HashMap<>();
 

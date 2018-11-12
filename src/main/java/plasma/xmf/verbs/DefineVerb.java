@@ -8,14 +8,13 @@ import plasma.xmf.exceptions.InvalidVerbArgumentsException;
 public class DefineVerb implements Verb {
 
     @Override
-    public ManifestContext invoke(ManifestContext context, String clause) {
-        String[] split = clause.trim().split(" ");
-        if (split.length != 2)
+    public ManifestContext invoke(ManifestContext context, String[] args) {
+        if (args.length != 2)
             throw new InvalidVerbArgumentsException("DEFINE requires 2 arguments!");
-        if (split[0].equalsIgnoreCase("import") || split[0].equalsIgnoreCase("define"))
+        if (args[0].equalsIgnoreCase("import") || args[0].equalsIgnoreCase("define"))
             throw new InvalidVerbArgumentsException("Cannot override the DEFINE and IMPORT verbs!");
 
-        context.setVerb(split[0].toLowerCase(), split[1]);
+        context.setVerb(args[0].toLowerCase(), args[1]);
         return context;
     }
 }

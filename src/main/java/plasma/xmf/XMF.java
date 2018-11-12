@@ -1,7 +1,6 @@
 package plasma.xmf;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -88,6 +87,13 @@ public final class XMF {
 
         public XMF build() {
             return new XMF(this.context, this.executionSteps);
+        }
+
+        public Builder copy() {
+            Builder b = new Builder();
+            b.setContext(this.context);
+            b.executionSteps.addAll(this.executionSteps);
+            return b;
         }
     }
 }

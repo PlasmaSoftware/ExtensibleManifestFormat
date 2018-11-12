@@ -46,6 +46,10 @@ public final class ManifestContext {
         macros.put(key, value);
     }
 
+    public boolean hasMacro(String key) {
+        return macros.containsKey(key);
+    }
+
     public String getVerb(String verb) {
         return verbs.getOrDefault(verb, null);
     }
@@ -56,6 +60,10 @@ public final class ManifestContext {
 
     public void setVerb(String key, String value) {
         verbs.put(key, value);
+    }
+
+    public boolean hasVerb(String key) {
+        return verbs.containsKey(key);
     }
 
     @SuppressWarnings("unchecked")
@@ -69,5 +77,9 @@ public final class ManifestContext {
 
     public void setData(String key, Object o) {
         data.put(key, o);
+    }
+
+    public boolean hasData(String key) {
+        return data.containsKey(key);
     }
 }
