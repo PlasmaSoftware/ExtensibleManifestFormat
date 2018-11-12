@@ -1,0 +1,11 @@
+# Pieces of metadata
+DEFINE AUTHOR plasma.xmf.verbs.AuthorVerb
+DEFINE DESCRIPTION plasma.xmf.verbs.DescriptionVerb
+DEFINE VERSION plasma.xmf.verbs.VersionVerb
+DEFINE NAME plasma.xmf.verbs.NameVerb
+
+# Filling out some default metadata
+AUTHOR Unknown Author
+DESCRIPTION N/A
+NAME Unknown Name
+VERSION $XMF_VERSION
