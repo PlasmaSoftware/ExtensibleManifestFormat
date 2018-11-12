@@ -46,7 +46,8 @@ public class DefaultXMFHandler implements XMFHandler {
             if (!context.hasVerb(verb))
                 throw new InvalidVerbException("Verb '" + verb + "' does not exist!");
 
-            String block = injectMacros(context, currStep.hasBlock() ? currStep.getBlock().getRawContent() : null);
+            String rawBlock = currStep.hasBlock() ? currStep.getBlock().getRawContent() : null;
+            String block = currStep.hasBlock() && currStep.getBlock().isImplicit() ? injectMacros(context, rawBlock) : rawBlock;
 
             String[] args = block == null ? new String[0] : ArgumentParser.parse(block, currStep.getBlock().isImplicit()).getTokens();
 
@@ -71,7 +72,8 @@ public class DefaultXMFHandler implements XMFHandler {
             if (!currStep.hasBlock())
                 throw new InvalidMacroDeclarationException("Macros cannot have non-existent blocks!");
 
-            String block = injectMacros(context, currStep.getBlock().getRawContent());
+            String rawBlock = currStep.getBlock().getRawContent();
+            String block = currStep.getBlock().isImplicit() ? injectMacros(context, rawBlock) : rawBlock;
 
             if (!observers.stream().allMatch(o -> o.observePreMacro(context, macro, block)))
                 return context;

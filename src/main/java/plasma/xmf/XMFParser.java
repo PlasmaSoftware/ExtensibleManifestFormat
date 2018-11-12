@@ -6,6 +6,9 @@ import plasma.xmf.ExecutionStep.Block;
 import java.util.*;
 import java.util.function.Function;
 
+/**
+ * The core XMF string parser. This is not intended to be a public api.
+ */
 public final class XMFParser {
 
     public static final String WHITESPACE = " \t\n\r\f";

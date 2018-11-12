@@ -5,8 +5,18 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Optional;
 
+/**
+ * Internal class to handle the resolution of XMF imports.
+ */
 public final class ImportResolver {
 
+    /**
+     * Attempts to find a remote xmf text contents.
+     *
+     * @param address The address. This can either be a url, a classpath internal path, or a filepath. You can provide
+     *      a hint to the resolver by prepending your address with url:, classpath:, or file:, respectively.
+     * @return An empty optional if the xmf could not be resolved, otherwise it contains the resolved XMF.
+     */
     public static Optional<String> findXMF(String address) {
         address = address.trim();
         if (address.contains("\n"))
